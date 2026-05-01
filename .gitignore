@@ -1,0 +1,28 @@
+# CMake
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+build.ninja
+compile_commands.json
+.cmake/
+
+# Objects and Libraries
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+
+# Executables
+webserver
+
+# IDEs
+.idea/
+.vscode/
+
+# System files
+.DS_Store
+Thumbs.db
