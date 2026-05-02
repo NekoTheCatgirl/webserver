@@ -10,7 +10,7 @@ response_t *handle_index(const request_t *req);
 #define ROUTES \
     X("/", handle_index) \
 
-static inline response_t *dispatch(const char *path, const request_t *req) {
+static response_t *dispatch(const char *path, const request_t *req) {
 #define X(p, handler) if (strcmp(path, p) == 0) return handler(req);
     ROUTES
 #undef X
