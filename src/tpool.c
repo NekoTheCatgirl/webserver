@@ -10,7 +10,7 @@ typedef struct tpool_work {
     struct tpool_work *next;
 } tpool_work_t;
 
-struct tpool_t {
+struct [[maybe_unused]] tpool_t {
     tpool_work_t *work_first;
     tpool_work_t *work_last;
 

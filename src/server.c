@@ -1,12 +1,13 @@
+#include <client.h>
+#include <errno.h>
 #include <server.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/socket.h>
 #include <netinet/in.h>
-#include <errno.h>
-#include <stdio.h>
+#include <sys/socket.h>
 
-struct server_t {
+struct [[maybe_unused]] server_t {
     int fd;
     tpool_t *pool;
     bool stop;
@@ -19,23 +20,15 @@ static void server_worker(void *arg) {
     while (1) {
         if (server->stop) break;
 
-        struct sockaddr_in client_addr;
-        socklen_t client_len = sizeof(client_addr);
+        client_info_t *info = malloc(sizeof(client_info_t));
+        if (!info) continue;
+        socklen_t addr_len = sizeof(info->addr);
+        info->fd = accept(server->fd, (struct sockaddr *)&info->addr, &addr_len);
+        if (info->fd < 0) continue;
 
-        int client_fd = accept(server->fd, (struct sockaddr *)&client_addr, &client_len);
-        if (client_fd < 0) continue;
-
-        int *client_fd_arg = malloc(sizeof(*client_fd_arg));
-        if (!client_fd_arg) {
-            close(client_fd);
-            continue;
-        }
-
-        *client_fd_arg = client_fd;
-
-        if (!tpool_add_work(server->pool, client_worker, client_fd_arg)) {
-            close(client_fd);
-            free(client_fd_arg);
+        if (!tpool_add_work(server->pool, client_worker, info)) {
+            close(info->fd);
+            free(info);
         }
     }
 }
@@ -85,6 +78,8 @@ server_t *server_create(const uint64_t addr, const uint16_t port, tpool_t *pool,
         errno = saved_errno;
         return nullptr;
     }
+
+    printf("Server started successfully on port %d\n", port);
 
     return server;
 }

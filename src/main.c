@@ -30,7 +30,7 @@ void print_help(const char *program_name) {
     printf("  --help: Display this help message\n");
 }
 
-int main(int argc, char *argv[]) {
+int main(const int argc, char *argv[]) {
     if (signal(SIGINT, catch_function) == SIG_ERR || signal(SIGTERM, catch_function) == SIG_ERR) {
         fprintf(stderr, "Failed to set signal handler: %s\n", strerror(errno));
         exit(EXIT_FAILURE);

@@ -1,7 +1,6 @@
 #ifndef WEBSERVER_SERVER_H
 #define WEBSERVER_SERVER_H
 
-#include <client.h>
 #include <stdint.h>
 #include <tpool.h>
 

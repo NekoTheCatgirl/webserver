@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-static http_method_t http_method_from_string(const char *s, size_t len) {
+static method_t http_method_from_string(const char *s, size_t len) {
     switch (len) {
         case 3:
             if (memcmp(s, "GET", 3) == 0) return HTTP_METHOD_GET;
@@ -30,7 +30,7 @@ static http_method_t http_method_from_string(const char *s, size_t len) {
     return HTTP_METHOD_UNKNOWN;
 }
 
-const char *method_to_str(const http_method_t m) {
+const char *method_to_str(const method_t m) {
     switch (m) {
         case HTTP_METHOD_GET:       return "GET";
         case HTTP_METHOD_POST:      return "POST";
@@ -45,7 +45,7 @@ const char *method_to_str(const http_method_t m) {
     }
 }
 
-static int push_header(http_request_t *req, const char *name, size_t name_len, const char *val, size_t val_len) {
+static int push_header(request_t *req, const char *name, size_t name_len, const char *val, size_t val_len) {
     if (req->header_count == req->header_cap) {
         const size_t new_cap = req->header_cap == 0 ? 8 : req->header_cap * 2;
         if (new_cap > HTTP_MAX_HEADERS) return -1;
@@ -64,7 +64,7 @@ static int push_header(http_request_t *req, const char *name, size_t name_len, c
     return 0;
 }
 
-int http_request_parse(http_request_t *req, const char *raw, size_t len) {
+int http_request_parse(request_t *req, const char *raw, size_t len) {
     memset(req, 0, sizeof(*req));
 
     const char *cur = raw;
@@ -147,7 +147,7 @@ err:
     return -1;
 }
 
-const char *http_request_header(const http_request_t *req, const char *name) {
+const char *http_request_header(const request_t *req, const char *name) {
     for (int i = 0; i < req->header_count; i++) {
         if (strcasecmp(req->headers[i].name, name) == 0)
             return req->headers[i].value;
@@ -155,7 +155,7 @@ const char *http_request_header(const http_request_t *req, const char *name) {
     return nullptr;
 }
 
-void http_request_free(http_request_t *req) {
+void http_request_free(request_t *req) {
     for (int i = 0; i < req->header_count; i++) {
         free(req->headers[i].name);
         free(req->headers[i].value);
